@@ -16,7 +16,7 @@ configs.detectors = {'alphapose', 'openpose', 'detectron'};  % TODO: change this
 % configs.ffpath = 'C:/Users/andre/Downloads/ffmpeg-4.3.1-2021-01-01-full_build/ffmpeg-4.3.1-2021-01-01-full_build/bin/ffmpeg.exe'; % This isn't always needed, but is used as a fallback when MATLAB operations fail
 
 % Calculate gait features
-ft_configs = GaitFeatureConfigs(["DBSCAN", "original"], dataset_name);
+ft_configs = GaitFeatureConfigs(["DBSCAN", "original"], dataset_name); % 'manual' is also an option, but requires annotations of frames in which footfalls occur
 ft_configs.raw_or_filt = 'interpolated'; 
 % ft_configs.manual_step_root = "/home/saboa/data/objective_2/manual_annotations_global";  % path to manual steps only needed when "manual" option is selected (these can be generated easily using: https://github.com/andreasabo-ibbme/step_labeller)
 ft_configs = ft_configs.setOutputRoot(fullfile(out_path, "gait_features"));
@@ -27,7 +27,7 @@ is_kinect = 0;
 is_3D = 0;
 export_configs = ExportConfigs(fullfile(out_path, 'centred_at_100'), is_kinect, is_3D);
 export_configs.center_hip = 1;
-reference_file = fullfile(ft_configs.output_root, "alphapose_DBSCAN.csv");
+reference_file = fullfile(ft_configs.output_root, "alphapose_original.csv");
 centreCSVsat100(configs, export_configs, "raw", reference_file); % This will interpolate and filter the raw (alternatively, can just pass in the clean data and these operations are redundant)
 
 

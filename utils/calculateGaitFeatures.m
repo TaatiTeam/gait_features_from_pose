@@ -86,10 +86,13 @@ for d = 1:length(configs.detectors)
                 
             elseif strcmp(ff_method, "DBSCAN")
                 [footfalls_good, footfalls_all, start_is_left] = stepDetectionDBSCAN(skel, additional_info, gait_fts_configs);
+           
+            elseif strcmp(ff_method, "original")
+                [footfalls_good, footfalls_all, start_is_left] = stepDetection2DPeak(skel, additional_info, gait_fts_configs);
                 
             elseif strcmp(ff_method, "peak3d")
                 [footfalls_good, footfalls_all, start_is_left] = stepDetection3DPeak(skel, additional_info, gait_fts_configs);
-                
+            
                 
             end
             

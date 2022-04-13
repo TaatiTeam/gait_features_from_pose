@@ -1,5 +1,5 @@
 function [] = centreCSVsat100(configs, export_configs, filt_or_raw, reference_gait_fts_file)
-fprintf("starting CSV export");
+fprintf("starting CSV export\n");
 % Go through all of the walks
 all_walks_source  = configs.clean_trajectory_folder;
 

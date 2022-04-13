@@ -182,10 +182,14 @@ if stepsofwalk > 2
     %calc step widths at each stance phase (at locs)
     nw=zeros(length(locs),1);
     for i=1:length(locs)
+        try
         nw(i,1)=abs(LF(locs(i),1)-RF(locs(i),1))/norm_factor(locs(i),2);
         % As a sanity check, this shouldn't be more than 3x the hip width
         if (nw(i,1) > 3)
             nw(i,1) =NaN;
+        end
+        catch
+            i
         end
         
     end

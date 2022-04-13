@@ -58,7 +58,7 @@ classdef PosetrackerConfigs
             % Create the temp_paths to use for discont and flipping
             label_output = fullfile(output_data_path, 'label_temp');
             discont_output = fullfile(output_data_path, 'discont_temp');
-            final_output = fullfile(output_data_path, 'FINAL');
+            final_output = fullfile(output_data_path, 'FINAL_trajectories');
             obj.clean_trajectory_folder = final_output;
             folders_to_make = {label_output, discont_output, final_output};
             
@@ -107,10 +107,8 @@ classdef PosetrackerConfigs
                 [walk_id, patient_id, isbackward] = getWalkAndPatientIDPD(obj, walk_base);
             elseif strcmp(obj.dataset, "Dravet_homevids")
                 [walk_id, patient_id, isbackward] = getWalkAndPatientIDPD(obj, walk_base);
-                
             else
                 error("ERROR in getWalkAndPatientID - don't have handler for %s", obj.dataset);
-                
             end
         end
         
