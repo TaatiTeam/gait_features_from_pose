@@ -23,13 +23,13 @@ classdef LabelingConfigs
         % (if you want to modify temporal joining parameters directly).
         % Modifying the properties here is good for experimenting, but once
         % a good configuration is found, name it and add it to the class
-        % permanently
+        % permanently (bottom of this file)
         subsequent_frame_skel_closeness_thres
         conf_thres
-        closeness_based_on_lower_body
+        closeness_based_on_lower_body     % Should we only consider joints in the lower body (those more important in gait analysis)
         smoothing_window_size
         label_using_3d = 0;
-        norm_by_hip = 0;
+        norm_by_hip = 0;                  % Normalize the distance between subsequent frames by the hip distance (so tighter threshold when person is far away)
     end
     
     % Public methods
@@ -39,11 +39,7 @@ classdef LabelingConfigs
             obj.dataset = dataset;
             obj.input_folder = input_data_path;
             obj.output_folder = output_data_path;
-            
-            
-            
         end
-        
         
         function [walks] = GetWalksList(obj)
             walks = [];
@@ -85,7 +81,6 @@ classdef LabelingConfigs
                 end
             elseif strcmp(obj.dataset, "Dravet_homevids")
                 obj = obj.setDravetHomeVidsConstants();
-                
             end
             
             
@@ -104,12 +99,11 @@ classdef LabelingConfigs
         
     end % end public methods
     
-    
     % Private methods
     methods (Access = private)
         function [obj] = setTRIConstants(obj)
             %threshold for mean value of diff from one frame to another 
-            obj.subsequent_frame_skel_closeness_thres = 300;
+            obj.subsequent_frame_skel_closeness_thres = 30;
             obj.closeness_based_on_lower_body = 1;
             obj.smoothing_window_size = 10;
         end
@@ -126,14 +120,14 @@ classdef LabelingConfigs
         function [obj] = setBelmontConstants(obj)
             %threshold for mean value of diff from one frame to another 
             obj.is_vertical = 1;
-            obj.subsequent_frame_skel_closeness_thres = 1800;
+            obj.subsequent_frame_skel_closeness_thres = 90;
             obj.closeness_based_on_lower_body = 0;
             obj.smoothing_window_size = 10; 
         end
         
         function [obj] = setFasanoPDConstants(obj)
             %threshold for mean value of diff from one frame to another 
-            obj.subsequent_frame_skel_closeness_thres = 600;
+            obj.subsequent_frame_skel_closeness_thres = 30;
             obj.closeness_based_on_lower_body = 1;
             obj.smoothing_window_size = 20;
         end
@@ -149,7 +143,7 @@ classdef LabelingConfigs
         
         function [obj] = setDravetHomeVidsConstants(obj)
             %threshold for mean value of diff from one frame to another 
-            obj.subsequent_frame_skel_closeness_thres = 600;
+            obj.subsequent_frame_skel_closeness_thres = 30;
             obj.closeness_based_on_lower_body = 1;
             obj.smoothing_window_size = 20;
         end        

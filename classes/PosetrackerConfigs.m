@@ -28,16 +28,15 @@ classdef PosetrackerConfigs
         clean_trajectory_folder;
         
         % Error log location
-        error_log_path = '/home/saboa/matlab_logs';     
+        error_log_path = './matlab_logs';     
         error_log
         
         % Console log level
         console_log_level = 0
         ffpath = '/usr/bin/ffmpeg';
-        temp_im_folder = '/home/saboa/tmp_im';  % if extracting with ffmpeg
+        temp_im_folder = './tmp_im';  % if extracting with ffmpeg
         % we need to save the image here temporarily
-        % Need to have write
-        % permission here
+        % Need to have write permission here
     end
     
     % Use this section to create static configurations if necessary.
@@ -156,7 +155,6 @@ classdef PosetrackerConfigs
         function [width, height] = getVideoRes(obj, video_path)
             
             video_frame = extractImageWithFFMPEG(video_path,1, obj.ffpath, obj.temp_im_folder);
-            
             width = size(video_frame, 2);
             height = size(video_frame, 1);
             
