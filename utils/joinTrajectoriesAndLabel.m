@@ -14,12 +14,9 @@ else
     split_table = LoadSplitDataTable(lc.split_csv, configs.split_depth);
 end
 
-for detector = 1:length(configs.detectors)
-    
+for detector = 1:length(configs.detectors)  
     det_name = configs.detectors{detector};
-    
-    
-    
+
     % Reset saved data for this detector===================================
     invalid_walks = {};
     bad_walk_count = 1; % This is index for logging so must be positive
@@ -35,7 +32,6 @@ for detector = 1:length(configs.detectors)
     sexes = NaN*zeros(length(all_walks), 1);
     
     % Done resetting saved data for this detector==========================
-    
     
     for row = 1:length(all_walks)
         walk_base = fullfile(lc.input_folder, all_walks{row});
@@ -73,16 +69,20 @@ for detector = 1:length(configs.detectors)
         if(~is_valid)
             
             err_file = {walk_base};
-            
-            state = str2double(walk_base(end));
-            if (state > 1)
-                err_message = 'Walk bout folder not found - colour\n';
-                err_code = 0;
+            % TRI specific logging:
+            if strcmp(configs.dataset, 'TRI')
+                state = str2double(walk_base(end));
+                if (state > 1)
+                    err_message = 'Walk bout folder not found - colour\n';
+                    err_code = 0;
+                else
+                    err_message = 'Walk bout folder not found - bw\n';
+                    err_code = -1;
+                end
             else
-                err_message = 'Walk bout folder not found - bw\n';
-                err_code = -1;
+                err_message = 'Walk bout folder not found\n';
+                err_code = 0;
             end
-            
             fprintf(err_message);
             
             [failed_detections_log] = logError(failed_detections_log, err_message, err_code, err_file, patient_id, walk_id);

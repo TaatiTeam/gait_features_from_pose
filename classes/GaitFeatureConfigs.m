@@ -45,12 +45,10 @@ classdef GaitFeatureConfigs
             % Set the joining constants based on the dataset
             if strcmp(dataset, "TRI")
                 obj = obj.setTRIConstants();
-            elseif strcmp(dataset, "CUSTOM")  %TODO: change this
-                obj = obj.setCustomConstants();
-                if strcmp(detector, 'romp')
-                    obj = obj.setCustomConstants_romp();
-                end
-                
+%             elseif strcmp(dataset, "CUSTOM")  %TODO: change this
+%                 obj = obj.setCustomConstants();
+            elseif strcmp(detector, 'romp')
+                    obj = obj.setCustomConstants_romp();              
             else
                 error('ERROR: %s is not defined in GaitFeatureConfigs', dataset);
             end

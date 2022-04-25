@@ -1,9 +1,9 @@
 close all, clear all, clc
 
-in_path = "N:/AMBIENT/Lakeside/PoseTrackingMatlabSmall";          % This is used for labelling data 
-out_path = "C:/Users/andre/OneDrive/Desktop/Lakeside_data_v4";      % This is the input directory for the processed trajectories (or output if labelling/preparing)
+in_path = "sample_data/raw_posetracking";          % This is used for labelling data 
+out_path = "sample_data/FINAL_labelled";           % This is the input directory for the processed trajectories (or output if labelling/preparing)
+% out_path = "sample_data/";           % Uncomment this to run the gait feature calculation (NOT labelling) example
 make_subfolders = 0;            % Enable this when labelling data, not needed if only calculating gait features
-
 
 dataset_name = "TRI";           % Make sure we have code to handle this dataset in the PosetrackerConfigs class 
 % dataset_name = "CUSTOM";      % Uncomment this line to create a custom dataset (you will need to define dataset specific handlers for each operation that requires it)
@@ -17,7 +17,6 @@ configs.detectors = {'alphapose'}; %, 'openpose', 'detectron'};  % TODO: change 
 configs.ffpath = 'C:/Users/andre/Downloads/ffmpeg-4.3.1-2021-01-01-full_build/ffmpeg-4.3.1-2021-01-01-full_build/bin/ffmpeg.exe'; 
 
 % Extract the participant data to csvs
-configs.labelling_configs.search_Eparticipant_files = 0;
 configs.labelling_configs.skip_if_epart_file_exists = 0; % Turn this on to avoid re-labelling walks (but turn off if re-processing with new configuration)
 configs = joinTrajectoriesAndLabel(configs);
 

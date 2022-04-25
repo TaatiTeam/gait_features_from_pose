@@ -63,7 +63,8 @@ classdef LabelingConfigs
                         walks = [walks, walks_to_append];
                     end
                 end
-
+            else
+               error('ERROR: %s is not defined in LabellingConfigs.GetWalksList', obj.dataset);
             end
         end
         
@@ -81,6 +82,8 @@ classdef LabelingConfigs
                 end
             elseif strcmp(obj.dataset, "Dravet_homevids")
                 obj = obj.setDravetHomeVidsConstants();
+            else
+                error('ERROR: %s is not defined in LabellingConfigs.RefreshJoiningConstants', obj.dataset);
             end
             
             

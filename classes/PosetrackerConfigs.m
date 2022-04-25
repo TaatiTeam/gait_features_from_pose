@@ -113,11 +113,11 @@ classdef PosetrackerConfigs
         
         
         function [video_path, walk_id, patient_id, timestamps] = getFPSAndNumFrames(obj, walk_base)
-            % How we extract the walk and patient id is dependent on how
-            % the files are named, and is thus dependent on dataset
+            % The path to the video file for each walk may be named
+            % differently for each dataset, do this function is used to
+            % set this. 
             if strcmp(obj.dataset, "TRI")
                 video_path = fullfile(walk_base, "Video.avi");
-                
             elseif strcmp(obj.dataset, "Belmont")
                 %TODO
             elseif strcmp(obj.dataset, "PD_Fasano")
