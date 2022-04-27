@@ -17,7 +17,7 @@ configs.detectors = {'alphapose'}; %, 'openpose', 'detectron'};  % TODO: change 
 configs.ffpath = 'C:/Users/andre/Downloads/ffmpeg-4.3.1-2021-01-01-full_build/ffmpeg-4.3.1-2021-01-01-full_build/bin/ffmpeg.exe'; 
 
 % Extract the participant data to csvs
-configs.labelling_configs.skip_if_epart_file_exists = 0; % Turn this on to avoid re-labelling walks (but turn off if re-processing with new configuration)
+configs.labelling_configs.skip_if_epart_file_exists = 1; % Turn this on to avoid re-labelling walks (but turn off if re-processing with new configuration)
 configs = joinTrajectoriesAndLabel(configs);
 
 % Do discontinuity checking and fix any flips in the skeletons

@@ -11,8 +11,8 @@ A flat, plaintext format is required for use with Matlab.
 - If multiple people are detected within a frame, the next person is separated with a semi-colon: `;`. Then the joint positions and confidence scores are provided. Note that the frame number is not repeated. 
 
 ```
-1_joint1x,joint1y,joint1conf,joint2x,joint2y,joint2conf...;                                                                                                      # One person in frame
-2_joint1x,joint1y,joint1conf,joint2x,joint2y,joint2conf...;joint1x_person2,joint1y_person2,joint1conf_person2,joint2x_person2,joint2y_person2,joint2conf_person2 # Two people in frame
+1_joint1x,joint1y,joint1conf,joint2x,joint2y,joint2conf...;                      # One person in frame
+2_joint1x,joint1y,joint1conf,joint2x,joint2y,joint2conf...;joint1x_person2,joint1y_person2,joint1conf_person2... # Two people in frame
 3_                         # No people in frame
 
 ```
