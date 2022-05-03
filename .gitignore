@@ -1,2 +1,4 @@
 *.asv
-
+matlab_logs
+*.jpg
+Eparticipant*

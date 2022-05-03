@@ -28,16 +28,15 @@ classdef PosetrackerConfigs
         clean_trajectory_folder;
         
         % Error log location
-        error_log_path = '/home/saboa/matlab_logs';     
+        error_log_path = './matlab_logs';     
         error_log
         
         % Console log level
         console_log_level = 0
         ffpath = '/usr/bin/ffmpeg';
-        temp_im_folder = '/home/saboa/tmp_im';  % if extracting with ffmpeg
+        temp_im_folder = './tmp_im';  % if extracting with ffmpeg
         % we need to save the image here temporarily
-        % Need to have write
-        % permission here
+        % Need to have write permission here
     end
     
     % Use this section to create static configurations if necessary.
@@ -114,11 +113,11 @@ classdef PosetrackerConfigs
         
         
         function [video_path, walk_id, patient_id, timestamps] = getFPSAndNumFrames(obj, walk_base)
-            % How we extract the walk and patient id is dependent on how
-            % the files are named, and is thus dependent on dataset
+            % The path to the video file for each walk may be named
+            % differently for each dataset, do this function is used to
+            % set this. 
             if strcmp(obj.dataset, "TRI")
                 video_path = fullfile(walk_base, "Video.avi");
-                
             elseif strcmp(obj.dataset, "Belmont")
                 %TODO
             elseif strcmp(obj.dataset, "PD_Fasano")
@@ -156,7 +155,6 @@ classdef PosetrackerConfigs
         function [width, height] = getVideoRes(obj, video_path)
             
             video_frame = extractImageWithFFMPEG(video_path,1, obj.ffpath, obj.temp_im_folder);
-            
             width = size(video_frame, 2);
             height = size(video_frame, 1);
             

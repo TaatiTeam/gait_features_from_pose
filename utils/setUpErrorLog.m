@@ -3,7 +3,7 @@ if (nargin < 2)
     file_prefix = "error";
 end
 if (nargin < 1)
-    output_csv_path = 'N:\AMBIENT\Andrea S\Matlab_for_2D_Feature_Extraction\output';
+    output_csv_path = './output_log';
 
 end
 cur_time = now; 

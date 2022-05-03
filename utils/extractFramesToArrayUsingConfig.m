@@ -6,19 +6,16 @@ configs.labelling_configs = configs.labelling_configs.RefreshJoiningConstants(wa
 [vid_width, vid_height] = configs.getVideoRes(walk_data.video_path);
 
 fps = walk_data.fps;
-real_num_frames = walk_data.num_frames;
-subsequent_frame_skel_closeness_thres = (configs.labelling_configs.subsequent_frame_skel_closeness_thres) / 640 * max(vid_width, vid_height);
+subsequent_frame_skel_closeness_thres = configs.labelling_configs.subsequent_frame_skel_closeness_thres;
 conf_thres = configs.labelling_configs.conf_thres;
 smoothing_window_size = configs.labelling_configs.smoothing_window_size;
 closeness_based_on_lower_body = configs.labelling_configs.closeness_based_on_lower_body;
 search_Eparticipant_files = configs.labelling_configs.search_Eparticipant_files;
 epart_file = walk_data.epart_path;
 
-
 patient_id = walk_data.patient_id;
 walk_id = walk_data.walk_id;
 walk_base = walk_data.walk_base;
-
 
 pred_file = walk_data.pred_path;
 detector = walk_data.detector;
@@ -33,8 +30,6 @@ if strcmp(detector, 'romp')
 else
     [~, skels, walk_data] =  extractFrom2Ddetectors(pred_file, walk_data, detector);
 end
-
-
 
 % Assume that the participant is present in the first frame of the video
 sorted_skels_count = 0;
@@ -73,12 +68,8 @@ for skel = 1:length(skels)
                     sorted_skels(skel).(cur_joint).(cur_subjoint) = skels(skel).(cur_joint).(cur_subjoint)(1, :);
                 end
             else
-                
                 sorted_skels(skel).(cur_joint) = skels(skel).(cur_joint)(1, :);
             end
-            
-            
-            
         end
     end
 end
@@ -95,7 +86,6 @@ end
 
 
 start_frame = 1;
-done = 0;
 if sorted_skels_count < length(skels)
     for t = 1:length(skels(1).Nose)
         if found_first_frame % check if there are any other skeletons that start within the sliding window
@@ -110,7 +100,6 @@ if sorted_skels_count < length(skels)
                     
                     fields = fieldnames(skels(skel));
                       
-%                     fields = getKeypointOrderInCSV(detector);
                     for f = 1:length(fields)
                         field = fields{f};
                         try
@@ -134,31 +123,20 @@ if sorted_skels_count < length(skels)
                                     cur_subjoint = subfields{s};
 
                                     sorted_skels(skel).(cur_joint).(cur_subjoint) = ones(t2-start_frame+1, 3).*skels(skel).(cur_joint).(cur_subjoint)(t2, :);
-
                                 end
                             else
-                                
                                 sorted_skels(skel).(cur_joint) = ones(t2-start_frame+1, 3).*skels(skel).(cur_joint)(t2, :);
                             end
                         end
                         start_frame = t;
                         first_frame = t;
-                        
                         sorted_skels_count = sorted_skels_count+1;
                     end
-                    
-                    
                 end
             end
-            
             break;
             
-            
-            
-            
         else % we need to find the first skeleton first
-            
-            
             for skel = 1:length(skels)
                 % Check if there is any data at the first time stamp
                 sum_all_joints = 0;
@@ -198,14 +176,10 @@ if sorted_skels_count < length(skels)
                     start_frame = t;
                     sorted_skels_count = sorted_skels_count+1;
                 end
-                
             end
-            
         end
     end
 end
-
-
 
 
 try
@@ -215,9 +189,7 @@ try
         if isempty(sorted_skels(sSkel_id).Nose)
             sorted_skels(sSkel_id) = [];
         end
-        
     end
-
 catch
     if deleteEmptyOP && detector == 1
         detector;
@@ -228,13 +200,8 @@ catch
         skel_id = 0;
         smoothed_patient_data = 0;
         return;
-        
     end
-    
-    
 end
-
-
 
 
 % Iterate through each frame and assign the detections to a skel
@@ -254,25 +221,27 @@ for frame = (start_frame+1):(walk_data.stop_frame - walk_data.start_frame)
             mean_skel = ComputeMeanSkel(cur_skel, frames_seen-1-smoothing_window_size:frames_seen-1);
         end
         
-        %         fprintf('%d, %d\n', frame, sorted_skel_ind);
         % Compute distance to each potential skel from mean_skel
         for potential_skel_ind = 1:length(skels)
             cur_potential_skel = skels(potential_skel_ind);
             
             if size(cur_potential_skel.Nose, 1) < frame
                 distance(potential_skel_ind) = Inf;
+                distance_avg(potential_skel_ind) = Inf;
                 continue; % No data in this skeleton at this frame
             end
-            %                     fprintf('%d, %d, %d\n', frame, sorted_skel_ind, potential_skel_ind);
             
-            distance(potential_skel_ind) = ComputeSkelDist(mean_skel, cur_potential_skel,...
+            [skel_dist_sum, skel_dist_per_joint] = ComputeSkelDist(mean_skel, cur_potential_skel,...
                 frame, conf_thres/100/2, closeness_based_on_lower_body,...
                 configs.labelling_configs.label_using_3d, configs.labelling_configs.norm_by_hip);
+            
+            distance(potential_skel_ind) = skel_dist_sum;
+            distance_avg(potential_skel_ind) = skel_dist_per_joint;
         end
         
         % Assign this skel to the sorted skeleton that is closest, assuming
         % it is within the threshold
-        [val_min, ind_min] = min(distance);
+        [val_min, ind_min] = min(distance_avg);
         
         
         if (val_min < subsequent_frame_skel_closeness_thres)
@@ -305,10 +274,8 @@ for sorted_skel_ind = 1:length(sorted_skels)
         else
             sorted_skels(sorted_skel_ind).(cur_joint) = all_data(1:last_frame_count(sorted_skel_ind), :);
         end
-
     end
 end
-
 
 % Now visualize the detected skeletons and have the operator select which
 % corresponds to the participant.
@@ -371,8 +338,7 @@ if ~have_participant_label
     [patient_skel, failed_detections_log, is_valid_skel, skel_id] ...
         = labelPatientInImage(im_labelling_struct, aux_data);
     configs.error_log = failed_detections_log;
-    
-    
+
 elseif is_valid_skel % We loaded in the data from the eparticipant file
     patient_skel = sorted_skels(skel_id);
 end
@@ -387,7 +353,6 @@ end
 % Fill any nans
 patient_skel = interpolateAndFilterSkelData(patient_skel, detector, configs.filter_cutoff_hz, configs.is_kinect,fps, conf_thres, 1); %interpolate only
 
-
 % Interpolate and smooth over poorly tracked values
 smoothed_patient_data = interpolateAndFilterSkelData(patient_skel, detector, configs.filter_cutoff_hz, configs.is_kinect,fps, conf_thres, 0); % now filter
 
@@ -399,11 +364,9 @@ try
     walk_data.fixOP = fixOP;
     walk_data.width = vid_width;
     walk_data.height = vid_height;
-    %     walk_data.vid_name =
     
     % Use default constructor for 2D
     export_configs = ExportConfigs(configs.labelling_configs.output_folder, 0, configs.is_3d);
-    %     export_configs = SetNormalization(export_configs, "shoulder", 1, 100);
     exportSkelDataToCSV(export_configs, walk_data, patient_skel, smoothed_patient_data);
 catch
     fprintf('failed to export to csv\n');
@@ -434,19 +397,10 @@ function [skels] = extractFromROMP(pred_file, walk_data, detector)
                 end
             catch
                 skels(p) = ProcessSkeletonROMP(cur_person_data, 0, frame - walk_data.start_frame + 1, detector);
-            end
-
-            
+            end 
         end
-
-        
     end
-
-
 end
-
-
-
 
 function [T, skels, walk_data] = extractFrom2Ddetectors(pred_file, walk_data, detector)
 fid=fopen(pred_file);
@@ -516,7 +470,6 @@ for frame = walk_data.start_frame:walk_data.stop_frame
         
         % Let's check that the next row in the table isn't a continuation
         % of this one
-        
         try
             raw_frame_data_next = T.(1)(frame+1);
             raw_frame_data_next = raw_frame_data_next{1};
@@ -539,15 +492,9 @@ for frame = walk_data.start_frame:walk_data.stop_frame
                     raw_frame_data = strcat(raw_frame_data, ',',next_cord);
                 end
             end
-            
-            
-            
         catch
-            
         end
         raw_split_skels = split( raw_frame_data , ';' );
-        
-        
     end
     
     
@@ -566,13 +513,7 @@ for frame = walk_data.start_frame:walk_data.stop_frame
     if ~exist('skels', 'var')
         skels = [];
     end
-    
-    
 end
-
-
-
-
 end
 
 

@@ -1,4 +1,4 @@
-function [ skel_dist ] = ComputeSkelDist(mean_skel, cur_skel, frame, conf_thres, closeness_based_on_lower_body, is_3d, norm_by_hip)
+function [ skel_dist , skel_dist_per_joint] = ComputeSkelDist(mean_skel, cur_skel, frame, conf_thres, closeness_based_on_lower_body, is_3d, norm_by_hip)
 if nargin < 4
     conf_thres = 0.4;
     is_3d = 0;
@@ -71,7 +71,8 @@ else
 end
 
 % Rescale the contribution of the joints
-skel_dist = skel_dist * length(fn) / num_joints_included / hip_norm_factor;
+skel_dist_per_joint = skel_dist / num_joints_included / hip_norm_factor;
+skel_dist = skel_dist * length(fn) / num_joints_included / hip_norm_factor; % Threshold uses all joints if not normalized so scale by number of joints seen
 
 end
 
