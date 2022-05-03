@@ -41,7 +41,7 @@ For large datasets, it is often necessary to pause and continue data processing 
 ```
 configs.labelling_configs.skip_if_epart_file_exists = 1; % Turn this on to avoid re-labelling walks (but turn off if re-processing with new configuration)
 ```
-After the trajectories are joined internally, it is necessary to manually select the trajectory which corresponds to the participant of interest. This library provides a simple command-line utility and a tool to plot the trajectories in different colours over a frame from the video. A sample image of this functionality is shown below (Note: a gray rectangle was used to replace a frame of the input video in this example for privacy reasons)
+After the trajectories are joined internally, it is necessary to manually select the trajectory which corresponds to the participant of interest. This library provides a simple command-line utility and a tool to plot the trajectories in different colours over a frame from the video. A sample image of this functionality is shown below (Note: a gray rectangle was used to replace each frame of the input video in this example for privacy reasons)
 ![Trajectory](images/trajectory_label.png)
 
 
@@ -61,8 +61,13 @@ A simple command-line interface is used to control the manual correction steps. 
 The gait feature calculation utilities expects that you have already extracted joint trajectories using a human pose-estimation library and have preprocessed it to create a clean trajectory representing the person of interest. Note that these joint trajectories can be generated using the code in this library, as documented under the [Joint Trajectory Extraction](#Joint-Trajectory-Extraction) section. An example of the sample input data format can be found in the `sample_data/FINAL_trajectories` folder. Note that we have provided examples of both raw (uninterpolated and unfiltered) and interpolated versions of the trajectories. It is not necessary to provide both, but you should provide at least one and specify which one to use in `calculate_features_main.m`. 
 
 ## Sample Data
-After installing MATLAB and preparing all joint trajectories into the format specified in `sample_data/FINAL_trajectories`, you should begin by running the `calculate_features_main.m` file.  
-This file is the entry point for the library and should run on the sample data in this repository. If there are no errors and everything runs correctly, you should have two new folders in the `sample_data` directory (`gait_features` and `centred_at_100`).
+After installing MATLAB and preparing all joint trajectories into the format specified in `sample_data/FINAL_trajectories`, you should begin by running the `calculate_features_main.m` file. If you do not wish or need to re-prepare the joint trajectories, the following lines should be commented out to avoid re-processing data: 
+```
+configs = joinTrajectoriesAndLabel(configs);
+configs= fixDiscontinuitiesAndFlips(configs);
+```
+
+If there are no errors and everything runs correctly, you should have two new folders in the `sample_data` directory (`gait_features` and `centred_at_100`).
 
 ## Custom Dataset
 After confirming that everything is working as expected on the sample dataset, you can add additional configurations for your datasets (if needed). 
@@ -70,15 +75,18 @@ To add a custom dataset, begin by uncommenting the following line in `calculate_
 ```
 dataset_name = "CUSTOM"; 
 ```
-*Note: you will also need to make the appropriate changes to getWalkAndPatientID in the PosetrackerConfigs class to specify how your input CSV files are named*
+*Note: you will also need to make the appropriate changes to getWalkAndPatientID in the PosetrackerConfigs class to specify how your input CSV files are named and how any dataset-specific parameters should be set.*
 
+Next, specify the location of the data you would like to process:
+- If you are processing raw data and will be doing trajectory joining and lateral flip correction, specify the input path in the `in_path` variable. 
+- If you already have preprocessed joint trajectories, specify the input path to them using the `out_path` variable. 
 
-Next, specify the location of the joint trajectories you would like to process. Note that this should be saved in the **`out_path`** variable (not the `in_path` - this will be used in a future update of this library for processing raw output from the pose-estimation libraries)
 ```
 out_path = "sample_data/";   % Change out_path to the input location of your joint trajectories. Note that they should be placed in a subfolder called `FINAL_trajectories`. 
 ```
 
 Next, specify the name(s) of the pose-estimation libraries you would like to process. Currently only OpenPose, AlphaPose, and Detectron have been used and tested, but you can add additional detectors here if needed. 
+
 ```
 configs.detectors = {'alphapose', 'openpose', 'detectron'};  % TODO: change this as needed
 ```
